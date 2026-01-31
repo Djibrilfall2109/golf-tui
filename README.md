@@ -1,6 +1,6 @@
 # golf-tui
 
-A beautiful terminal UI for live professional golf leaderboards and player stats.
+A terminal UI for live professional golf leaderboards and player stats.
 
 ```
    ██████╗  ██████╗ ██╗     ███████╗
