@@ -85,7 +85,16 @@ Type `/` to open the command palette:
 
 - [React](https://reactjs.org/) + [Ink](https://github.com/vadimdemedes/ink) - Terminal UI framework
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [ESPN API](https://github.com/pseudo-r/Public-ESPN-API) - Live golf data
+
+## Data Source
+
+This app uses ESPN's public (undocumented) API for live golf data. Special thanks to [pseudo-r/Public-ESPN-API](https://github.com/pseudo-r/Public-ESPN-API) for documenting the available endpoints.
+
+**Note:** This is an unofficial app and is not affiliated with ESPN. Data is provided for personal use only.
+
+## Built With
+
+This project was built with [Factory's Droid](https://factory.ai) - an AI software engineering agent.
 
 ## License
 
