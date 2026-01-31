@@ -76,7 +76,30 @@ export interface TournamentResult {
   score: string;
 }
 
-export type View = 'leaderboard' | 'schedule' | 'player' | 'help' | 'event-leaderboard' | 'stat-leaders';
+export interface HoleScore {
+  holeNumber: number;
+  strokes: number;
+  toPar: number;
+  par: number;
+}
+
+export interface RoundScorecard {
+  round: number;
+  totalStrokes: number | null;
+  toPar: number | null;
+  holes: HoleScore[];
+  isComplete: boolean;
+}
+
+export interface PlayerScorecard {
+  playerId: string;
+  playerName: string;
+  eventId: string;
+  eventName: string;
+  rounds: RoundScorecard[];
+}
+
+export type View = 'leaderboard' | 'schedule' | 'player' | 'help' | 'event-leaderboard' | 'stat-leaders' | 'scorecard';
 
 export interface AppState {
   view: View;

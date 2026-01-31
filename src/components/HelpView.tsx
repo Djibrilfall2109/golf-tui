@@ -21,8 +21,10 @@ export function HelpView() {
         <Text bold color="cyan">Navigation</Text>
         <Text><Text color="yellow">j / Down</Text>   Move down</Text>
         <Text><Text color="yellow">k / Up</Text>     Move up</Text>
-        <Text><Text color="yellow">Tab</Text>        Cycle through tours</Text>
+        <Text><Text color="yellow">Tab</Text>        Cycle tours (leaderboard) / breadcrumb</Text>
         <Text><Text color="yellow">Enter</Text>      Select / drill down</Text>
+        <Text><Text color="yellow">c</Text>          View player scorecard</Text>
+        <Text><Text color="yellow">1-4</Text>        Switch round (in scorecard)</Text>
         <Text><Text color="yellow">Esc</Text>        Go back / cancel</Text>
         <Text><Text color="yellow">/</Text>          Open command palette</Text>
         <Text><Text color="yellow">r</Text>          Refresh data</Text>

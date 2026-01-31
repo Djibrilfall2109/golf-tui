@@ -10,3 +10,6 @@ export { StatusBar } from './StatusBar.js';
 export { CommandPalette, COMMANDS, filterCommands } from './CommandPalette.js';
 export { HelpView } from './HelpView.js';
 export { SplashScreen } from './SplashScreen.js';
+export { ScorecardDetail } from './ScorecardDetail.js';
+export { LiveIndicator } from './LiveIndicator.js';
+export { Breadcrumb } from './Breadcrumb.js';

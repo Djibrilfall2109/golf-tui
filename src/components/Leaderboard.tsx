@@ -89,6 +89,7 @@ export function Leaderboard({ leaderboard, isLoading, error, selectedIndex, tour
         <Text dimColor>{'TOTAL'.padStart(5)}</Text>
         <Text dimColor>{'TODAY'.padStart(6)}</Text>
         <Text dimColor>{'THRU'.padStart(4)}</Text>
+        <Text dimColor>{'   '}</Text>
         {showRounds && (
           <>
             <Text dimColor> │</Text>
@@ -99,17 +100,32 @@ export function Leaderboard({ leaderboard, isLoading, error, selectedIndex, tour
           </>
         )}
       </Box>
-      <Text dimColor>{'─'.repeat(showRounds ? 66 : 46)}</Text>
+      <Text dimColor>
+        {'─'.repeat(showRounds ? 69 : 49)}
+      </Text>
 
       {/* Player Rows */}
-      {visibleEntries.map((entry, index) => (
-        <PlayerCard
-          key={entry.player.id}
-          entry={entry}
-          isSelected={startIndex + index === selectedIndex}
-          showRounds={showRounds}
-        />
-      ))}
+      {visibleEntries.map((entry, index) => {
+        const prevEntry = index > 0 ? visibleEntries[index - 1] : null;
+        const prevIsCut = prevEntry?.status && ['cut', 'wd', 'dq'].includes(prevEntry.status);
+        const currIsCut = entry.status && ['cut', 'wd', 'dq'].includes(entry.status);
+        const showCutLine = currIsCut && prevEntry && !prevIsCut;
+
+        return (
+          <React.Fragment key={entry.player.id}>
+            {showCutLine && (
+              <Box justifyContent="center">
+                <Text dimColor>──────────────── CUT ────────────────</Text>
+              </Box>
+            )}
+            <PlayerCard
+              entry={entry}
+              isSelected={startIndex + index === selectedIndex}
+              showRounds={showRounds}
+            />
+          </React.Fragment>
+        );
+      })}
 
       {/* Scroll indicator */}
       <Box marginTop={1}>

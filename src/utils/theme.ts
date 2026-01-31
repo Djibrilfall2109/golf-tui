@@ -31,3 +31,12 @@ export function getPositionColor(position: string): string {
   if (position.startsWith('T') || parseInt(position) <= 10) return 'cyan';
   return 'white';
 }
+
+export function getScoreSymbol(toPar: number | null): { symbol: string; color: string } | null {
+  if (toPar === null) return null;
+  if (toPar <= -2) return { symbol: '▲▲', color: 'green' };
+  if (toPar === -1) return { symbol: '▲', color: 'green' };
+  if (toPar === 1) return { symbol: '▼', color: 'red' };
+  if (toPar >= 2) return { symbol: '▼▼', color: 'red' };
+  return null;
+}

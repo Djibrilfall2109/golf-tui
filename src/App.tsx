@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { Box, Text, useApp, useInput, Static } from 'ink';
 import type { View, Tour, LeaderboardEntry } from './api/types.js';
 import { fetchEventLeaderboard } from './api/leaderboard.js';
-import { useLeaderboard, useTournaments, usePlayerProfile, useGlobalSearch } from './hooks/index.js';
+import { useLeaderboard, useTournaments, usePlayerProfile, useGlobalSearch, useScorecard } from './hooks/index.js';
 import {
   Header,
   StatusBar,
@@ -16,6 +16,8 @@ import {
   filterCommands,
   HelpView,
   SplashScreen,
+  ScorecardDetail,
+  Breadcrumb,
 } from './components/index.js';
 
 const TOURS: Tour[] = ['pga', 'lpga', 'eur', 'champions-tour'];
@@ -57,10 +59,17 @@ export function App() {
   const [eventLoading, setEventLoading] = useState(false);
   const [eventIndex, setEventIndex] = useState(0);
 
+  // Scorecard state
+  const [selectedRound, setSelectedRound] = useState(1);
+
+  // Breadcrumb navigation state
+  const [breadcrumbIndex, setBreadcrumbIndex] = useState<number | null>(null);
+
   // Data hooks
   const { leaderboard, isLoading: leaderboardLoading, error: leaderboardError, refresh } = useLeaderboard(tour);
   const { tournaments, isLoading: tournamentsLoading, error: tournamentsError } = useTournaments(tour);
   const { player, isLoading: playerLoading, error: playerError, loadPlayer, clear: clearPlayer } = usePlayerProfile();
+  const { scorecard, isLoading: scorecardLoading, error: scorecardError, loadScorecard, clear: clearScorecard, setAutoRefresh } = useScorecard();
 
   // Get filtered commands
   const filteredCommands = filterCommands(COMMANDS, commandInput);
@@ -78,6 +87,34 @@ export function App() {
 
   // Combine: show leaderboard results first, then global
   const hasLeaderboardResults = leaderboardSearchResults.length > 0;
+
+  // Build breadcrumb items based on current view
+  const breadcrumbItems = useMemo(() => {
+    switch (view) {
+      case 'leaderboard':
+        return leaderboard ? [leaderboard.tournament.name] : [];
+      case 'player':
+        return leaderboard && player
+          ? [leaderboard.tournament.name, player.name]
+          : player
+          ? [player.name]
+          : [];
+      case 'event-leaderboard':
+        return eventLeaderboard && player
+          ? [leaderboard?.tournament.name || 'Tournament', player.name, eventLeaderboard.tournament.name]
+          : [];
+      case 'scorecard':
+        return leaderboard && scorecard
+          ? [leaderboard.tournament.name, scorecard.playerName, 'Scorecard']
+          : scorecard
+          ? [scorecard.playerName, 'Scorecard']
+          : [];
+      case 'schedule':
+        return ['Schedule'];
+      default:
+        return [];
+    }
+  }, [view, leaderboard, player, eventLeaderboard, scorecard]);
 
   // Execute command
   const executeCommand = useCallback((commandName: string) => {
@@ -135,6 +172,61 @@ export function App() {
     setTour(TOURS[nextIndex]);
     setLeaderboardIndex(0);
   }, [tour]);
+
+  // Navigate to breadcrumb item by index
+  const navigateToBreadcrumb = useCallback((index: number) => {
+    const isLast = index === breadcrumbItems.length - 1;
+    if (isLast) {
+      setBreadcrumbIndex(null);
+      return;
+    }
+
+    // Navigate based on view and index
+    switch (view) {
+      case 'player':
+        if (index === 0) {
+          setView('leaderboard');
+          clearPlayer();
+          setPlayerResultIndex(0);
+        }
+        break;
+      case 'scorecard':
+        if (index === 0) {
+          setView('leaderboard');
+          setAutoRefresh(false);
+          clearScorecard();
+          setSelectedRound(1);
+        } else if (index === 1) {
+          // Go to player - need to load player from scorecard
+          if (scorecard) {
+            // Find the player in leaderboard entries
+            const entry = leaderboard?.entries.find(e => e.player.name === scorecard.playerName);
+            if (entry) {
+              loadPlayer(entry.player.id, entry.player.name);
+            }
+          }
+          setView('player');
+          setAutoRefresh(false);
+          clearScorecard();
+          setSelectedRound(1);
+        }
+        break;
+      case 'event-leaderboard':
+        if (index === 0) {
+          setView('leaderboard');
+          setEventLeaderboard(null);
+          setEventIndex(0);
+          clearPlayer();
+          setPlayerResultIndex(0);
+        } else if (index === 1) {
+          setView('player');
+          setEventLeaderboard(null);
+          setEventIndex(0);
+        }
+        break;
+    }
+    setBreadcrumbIndex(null);
+  }, [view, breadcrumbItems.length, clearPlayer, clearScorecard, setAutoRefresh, scorecard, leaderboard, loadPlayer]);
 
   // Keyboard input
   useInput((input, key) => {
@@ -231,6 +323,13 @@ export function App() {
         setCommandIndex(0);
         return;
       }
+      if (view === 'scorecard') {
+        setView('leaderboard');
+        setAutoRefresh(false);
+        clearScorecard();
+        setSelectedRound(1);
+        return;
+      }
       if (view === 'event-leaderboard') {
         setView('player');
         setEventLeaderboard(null);
@@ -301,15 +400,62 @@ export function App() {
       }
     }
 
+    // Scorecard view navigation
+    if (view === 'scorecard' && !isSearchFocused) {
+      if (input === '1' || input === '2' || input === '3' || input === '4') {
+        setSelectedRound(parseInt(input, 10));
+        return;
+      }
+    }
+
+    // Open scorecard from leaderboard or event leaderboard
+    if (input === 'c' && !isSearchFocused && (view === 'leaderboard' || view === 'event-leaderboard')) {
+      const currentLeaderboard = view === 'leaderboard' ? leaderboard : eventLeaderboard;
+      const currentIndex = view === 'leaderboard' ? leaderboardIndex : eventIndex;
+
+      if (currentLeaderboard) {
+        const entry = currentLeaderboard.entries[currentIndex];
+        if (entry) {
+          loadScorecard(
+            currentLeaderboard.tournament.id,
+            entry.player.id,
+            entry.player.name,
+            tour
+          );
+          setSelectedRound(currentLeaderboard.round || 1);
+          setAutoRefresh(true);
+          setView('scorecard');
+        }
+      }
+      return;
+    }
+
     // Refresh
     if (input === 'r' && !isSearchFocused && view === 'leaderboard') {
       refresh();
       return;
     }
 
-    // Tab to cycle tours
-    if (key.tab && !isSearchFocused && view === 'leaderboard') {
-      cycleTour();
+    // Tab navigation
+    if (key.tab && !isSearchFocused) {
+      // On leaderboard, Tab cycles tours
+      if (view === 'leaderboard') {
+        cycleTour();
+        return;
+      }
+      // On other views, Tab cycles through breadcrumb items
+      if (breadcrumbItems.length > 1) {
+        setBreadcrumbIndex(prev => {
+          if (prev === null) return 0;
+          return (prev + 1) % breadcrumbItems.length;
+        });
+        return;
+      }
+    }
+
+    // Enter on breadcrumb selection navigates
+    if (key.return && !isSearchFocused && breadcrumbIndex !== null) {
+      navigateToBreadcrumb(breadcrumbIndex);
       return;
     }
 
@@ -361,6 +507,11 @@ export function App() {
     setSearchIndex(0);
   }, [commandInput]);
 
+  // Reset breadcrumb selection when view changes
+  useEffect(() => {
+    setBreadcrumbIndex(null);
+  }, [view]);
+
   // Show splash screen
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
@@ -392,6 +543,11 @@ export function App() {
           filter={commandInput}
           selectedIndex={commandIndex}
         />
+      )}
+
+      {/* Breadcrumb navigation */}
+      {!showHelp && !isSearchFocused && breadcrumbItems.length > 0 && (
+        <Breadcrumb items={breadcrumbItems} selectedIndex={breadcrumbIndex ?? undefined} />
       )}
 
       {/* Search results */}
@@ -453,6 +609,16 @@ export function App() {
           error={null}
           selectedIndex={eventIndex}
           tour="pga"
+        />
+      )}
+
+      {/* Scorecard view */}
+      {!showHelp && view === 'scorecard' && (
+        <ScorecardDetail
+          scorecard={scorecard}
+          isLoading={scorecardLoading}
+          error={scorecardError}
+          selectedRound={selectedRound}
         />
       )}
 
