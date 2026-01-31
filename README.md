@@ -13,19 +13,26 @@ A beautiful terminal UI for live golf leaderboards and player stats.
 
 ## Features
 
-- **Live Leaderboards** - Real-time tournament scores from PGA Tour, LPGA, DP World Tour, and Champions Tour
-- **Hole-by-Hole Scorecards** - Detailed scorecards with eagle, birdie, and bogey indicators
-- **Player Profiles** - Detailed stats including scoring average, driving distance, greens hit, and recent results
+### Live Leaderboards
+Real-time tournament scores from PGA Tour, LPGA, DP World Tour, and Champions Tour.
+
+![Leaderboard](screenshots/leaderboard.png)
+
+### Hole-by-Hole Scorecards
+Detailed scorecards with eagle, birdie, and bogey indicators.
+
+![Scorecard](screenshots/scorecard.png)
+
+### Player Profiles
+Detailed stats including scoring average, driving distance, greens hit, and recent results.
+
+![Player Profile](screenshots/player.png)
+
+### More Features
 - **Tournament History** - Drill into any past tournament to see the full leaderboard
 - **Player Search** - Search for any golfer, whether they're playing this week or not
 - **Breadcrumb Navigation** - Tab through the navigation path to quickly jump between views
 - **Keyboard Navigation** - Fast, vim-style navigation throughout
-
-## Screenshots
-
-![Leaderboard](screenshots/leaderboard.png)
-![Scorecard](screenshots/scorecard.png)
-![Player Profile](screenshots/player.png)
 
 ## Installation
 
