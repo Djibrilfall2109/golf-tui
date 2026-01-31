@@ -1,0 +1,40 @@
+{
+  "name": "golf-tui",
+  "version": "1.0.0",
+  "description": "Terminal UI for real-time golf leaderboards and stats",
+  "type": "module",
+  "main": "src/index.tsx",
+  "bin": {
+    "golf": "./bin/golf.js"
+  },
+  "scripts": {
+    "start": "tsx src/index.tsx",
+    "dev": "tsx watch src/index.tsx",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["golf", "tui", "cli", "ink", "pga", "lpga", "leaderboard", "terminal", "react"],
+  "author": "Athletic Dev Co",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/athleticdevco/golf-tui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/athleticdevco/golf-tui/issues"
+  },
+  "homepage": "https://github.com/athleticdevco/golf-tui#readme",
+  "dependencies": {
+    "ink": "^4.4.1",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^5.0.1",
+    "react": "^18.2.0",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0"
+  }
+}
