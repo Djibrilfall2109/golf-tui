@@ -91,6 +91,102 @@ function formatScore(num: number): string {
   return num > 0 ? `+${num}` : `${num}`;
 }
 
+function parseCompetitor(
+  comp: ESPNCompetitor,
+  index: number,
+  currentRound: number,
+  isPlayoff: boolean,
+  tournamentStatus: string,
+): LeaderboardEntry | null {
+  if (!comp.athlete) return null;
+
+  const athlete = comp.athlete;
+  const player: Player = {
+    id: athlete.id || comp.id,
+    name: athlete.displayName || athlete.fullName || 'Unknown',
+    firstName: athlete.shortName?.split(' ')[0],
+    lastName: athlete.shortName?.split(' ').slice(1).join(' '),
+    country: athlete.flag?.alt,
+    countryCode: athlete.flag?.alt,
+    amateur: athlete.amateur,
+    imageUrl: athlete.headshot?.href,
+  };
+
+  const positionNum = comp.order || index + 1;
+  const positionStr = String(positionNum);
+
+  const allLinescores = (comp.linescores || []).filter(ls => ls.period !== undefined);
+  const regulationLinescores = allLinescores.filter(ls => (ls.period || 0) <= 4);
+  const playoffLinescores = allLinescores.filter(ls => (ls.period || 0) > 4);
+  const playerInPlayoff = isPlayoff && playoffLinescores.length > 0;
+
+  // Rounds: only regulation (R1-R4)
+  const rounds = regulationLinescores.map(ls => ls.displayValue || '-');
+
+  // Score: for playoff participants, sum regulation linescore values instead of using ESPN's comp.score
+  let scoreNum: number;
+  if (playerInPlayoff) {
+    scoreNum = regulationLinescores.reduce((sum, ls) => sum + parseScore(ls.displayValue), 0);
+  } else {
+    scoreNum = typeof comp.score === 'number' ? comp.score :
+               typeof comp.score === 'string' ? parseScore(comp.score) : 0;
+  }
+  const scoreStr = formatScore(scoreNum);
+
+  // Today/Thru for playoff participants
+  let todayStr: string;
+  let todayNum: number;
+  let thruStr: string;
+
+  if (playerInPlayoff && tournamentStatus === 'post') {
+    todayStr = '-';
+    todayNum = 0;
+    thruStr = 'P';
+  } else if (playerInPlayoff && tournamentStatus === 'in') {
+    // Live playoff: show playoff hole info
+    const playoffLs = playoffLinescores[0];
+    const playoffHoles = playoffLs?.linescores?.length || 0;
+    todayStr = playoffLs?.displayValue || '-';
+    todayNum = parseScore(todayStr);
+    thruStr = playoffHoles > 0 ? `P${playoffHoles}` : 'P';
+  } else {
+    // Normal (non-playoff) handling
+    const effectiveRound = Math.min(currentRound, 4);
+    const todayLinescore = regulationLinescores.find(ls => ls.period === effectiveRound);
+    todayStr = todayLinescore?.displayValue || (rounds.length > 0 ? rounds[rounds.length - 1] : '-');
+    todayNum = parseScore(todayStr);
+
+    const currentRoundLinescore = regulationLinescores.find(ls => ls.period === effectiveRound);
+    const holesPlayed = currentRoundLinescore?.linescores?.length || 0;
+    thruStr = holesPlayed >= 18 ? 'F'
+            : holesPlayed > 0 ? String(holesPlayed)
+            : '-';
+  }
+
+  let entryStatus: 'active' | 'cut' | 'wd' | 'dq' = 'active';
+  const statusVal = comp.status?.displayValue?.toLowerCase() || '';
+  if (statusVal.includes('cut')) entryStatus = 'cut';
+  else if (statusVal.includes('wd')) entryStatus = 'wd';
+  else if (statusVal.includes('dq')) entryStatus = 'dq';
+
+  const hasHoleData = regulationLinescores.some(ls => ls.linescores && ls.linescores.length > 0);
+
+  return {
+    player,
+    position: positionStr,
+    positionNum,
+    score: scoreStr,
+    scoreNum,
+    today: todayStr,
+    todayNum,
+    thru: thruStr,
+    rounds,
+    status: entryStatus,
+    scorecardAvailable: hasHoleData,
+    inPlayoff: playerInPlayoff || undefined,
+  };
+}
+
 export async function fetchEventLeaderboard(eventId: string, eventName: string, eventDate: string, tour: Tour = 'pga'): Promise<Leaderboard | null> {
   try {
     const dateStr = eventDate.slice(0, 10).replace(/-/g, '');
@@ -123,68 +219,19 @@ export async function fetchEventLeaderboard(eventId: string, eventName: string, 
       tour,
     };
 
+    const currentRound = competition.status?.period || 1;
+    const isPlayoff = currentRound > 4;
+
     const entries: LeaderboardEntry[] = (competition.competitors || [])
-      .map((comp, index): LeaderboardEntry | null => {
-        if (!comp.athlete) return null;
-
-        const athlete = comp.athlete;
-        const player: Player = {
-          id: athlete.id || comp.id,
-          name: athlete.displayName || athlete.fullName || 'Unknown',
-          firstName: athlete.shortName?.split(' ')[0],
-          lastName: athlete.shortName?.split(' ').slice(1).join(' '),
-          country: athlete.flag?.alt,
-          countryCode: athlete.flag?.alt,
-          amateur: athlete.amateur,
-          imageUrl: athlete.headshot?.href,
-        };
-
-        const positionNum = comp.order || index + 1;
-        const positionStr = String(positionNum);
-        
-        const scoreNum = typeof comp.score === 'number' ? comp.score : 
-                        typeof comp.score === 'string' ? parseScore(comp.score) : 0;
-        const scoreStr = formatScore(scoreNum);
-        
-        const roundLinescores = (comp.linescores || []).filter(ls => ls.period !== undefined);
-        const rounds = roundLinescores.map(ls => ls.displayValue || '-');
-        
-        const currentRound = competition.status?.period || 1;
-        const todayLinescore = roundLinescores.find(ls => ls.period === currentRound);
-        const todayStr = todayLinescore?.displayValue || (rounds.length > 0 ? rounds[rounds.length - 1] : '-');
-        const todayNum = parseScore(todayStr);
-        
-        // Thru - count holes played from current round's nested linescores
-        const currentRoundLinescore = roundLinescores.find(ls => ls.period === currentRound);
-        const holesPlayed = currentRoundLinescore?.linescores?.length || 0;
-        const thruStr = holesPlayed >= 18 ? 'F'
-                      : holesPlayed > 0 ? String(holesPlayed)
-                      : '-';
-
-        // Check if hole-level scorecard data is available
-        const hasHoleData = roundLinescores.some(ls => ls.linescores && ls.linescores.length > 0);
-
-        return {
-          player,
-          position: positionStr,
-          positionNum,
-          score: scoreStr,
-          scoreNum,
-          today: todayStr,
-          todayNum,
-          thru: thruStr,
-          rounds,
-          status: 'active',
-          scorecardAvailable: hasHoleData,
-        };
-      })
+      .map((comp, index) => parseCompetitor(comp, index, currentRound, isPlayoff, status))
       .filter((e): e is LeaderboardEntry => e !== null)
       .sort((a, b) => a.positionNum - b.positionNum);
 
     return {
       tournament,
       entries,
-      round: competition.status?.period || 4,
+      round: Math.min(currentRound, 4),
+      isPlayoff: isPlayoff || undefined,
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {
@@ -221,78 +268,19 @@ export async function fetchLeaderboard(tour: Tour): Promise<Leaderboard | null> 
       tour,
     };
 
+    const currentRound = competition.status?.period || 1;
+    const isPlayoff = currentRound > 4;
+
     const entries: LeaderboardEntry[] = (competition.competitors || [])
-      .map((comp, index): LeaderboardEntry | null => {
-        if (!comp.athlete) return null;
-
-        const athlete = comp.athlete;
-        const player: Player = {
-          id: athlete.id || comp.id,
-          name: athlete.displayName || athlete.fullName || 'Unknown',
-          firstName: athlete.shortName?.split(' ')[0],
-          lastName: athlete.shortName?.split(' ').slice(1).join(' '),
-          country: athlete.flag?.alt,
-          countryCode: athlete.flag?.alt,
-          amateur: athlete.amateur,
-          imageUrl: athlete.headshot?.href,
-        };
-
-        // Position comes from order or we derive from array position
-        const positionNum = comp.order || index + 1;
-        const positionStr = String(positionNum);
-        
-        // Score is the total score to par (number like -17)
-        const scoreNum = typeof comp.score === 'number' ? comp.score : 
-                        typeof comp.score === 'string' ? parseScore(comp.score) : 0;
-        const scoreStr = formatScore(scoreNum);
-        
-        // Get round scores from linescores (each linescore is a round)
-        const roundLinescores = (comp.linescores || []).filter(ls => ls.period !== undefined);
-        const rounds = roundLinescores.map(ls => ls.displayValue || '-');
-        
-        // Today's score is from the current round (last with data)
-        const currentRound = competition.status?.period || 1;
-        const todayLinescore = roundLinescores.find(ls => ls.period === currentRound);
-        const todayStr = todayLinescore?.displayValue || (rounds.length > 0 ? rounds[rounds.length - 1] : '-');
-        const todayNum = parseScore(todayStr);
-        
-        // Thru - count holes played from current round's nested linescores
-        const currentRoundLinescore = roundLinescores.find(ls => ls.period === currentRound);
-        const holesPlayed = currentRoundLinescore?.linescores?.length || 0;
-        const thruStr = holesPlayed >= 18 ? 'F'
-                      : holesPlayed > 0 ? String(holesPlayed)
-                      : '-';
-
-        let entryStatus: 'active' | 'cut' | 'wd' | 'dq' = 'active';
-        const statusVal = comp.status?.displayValue?.toLowerCase() || '';
-        if (statusVal.includes('cut')) entryStatus = 'cut';
-        else if (statusVal.includes('wd')) entryStatus = 'wd';
-        else if (statusVal.includes('dq')) entryStatus = 'dq';
-
-        // Check if hole-level scorecard data is available
-        const hasHoleData = roundLinescores.some(ls => ls.linescores && ls.linescores.length > 0);
-
-        return {
-          player,
-          position: positionStr,
-          positionNum,
-          score: scoreStr,
-          scoreNum,
-          today: todayStr,
-          todayNum,
-          thru: thruStr,
-          rounds,
-          status: entryStatus,
-          scorecardAvailable: hasHoleData,
-        };
-      })
+      .map((comp, index) => parseCompetitor(comp, index, currentRound, isPlayoff, status))
       .filter((e): e is LeaderboardEntry => e !== null)
       .sort((a, b) => a.positionNum - b.positionNum);
 
     return {
       tournament,
       entries,
-      round: competition.status?.period || 1,
+      round: Math.min(currentRound, 4),
+      isPlayoff: isPlayoff || undefined,
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {

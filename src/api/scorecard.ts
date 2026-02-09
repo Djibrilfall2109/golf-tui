@@ -82,6 +82,7 @@ export async function fetchPlayerScorecard(
 
     for (const roundData of roundLinescores) {
       if (roundData.period === undefined) continue;
+      if (roundData.period > 4) continue;
 
       const holeLinescores = roundData.linescores || [];
       const holes: HoleScore[] = [];

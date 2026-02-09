@@ -931,7 +931,7 @@ export function App() {
             entry.player.name,
             tour
           );
-          setSelectedRound(currentLeaderboard.round || 1);
+          setSelectedRound(Math.min(currentLeaderboard.round || 1, 4));
           setAutoRefresh(true);
           setView('scorecard');
         }

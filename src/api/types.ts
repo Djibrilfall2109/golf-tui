@@ -36,12 +36,14 @@ export interface LeaderboardEntry {
   rounds: string[];
   status?: 'active' | 'cut' | 'wd' | 'dq';
   scorecardAvailable?: boolean;
+  inPlayoff?: boolean;
 }
 
 export interface Leaderboard {
   tournament: Tournament;
   entries: LeaderboardEntry[];
   round: number;
+  isPlayoff?: boolean;
   lastUpdated: string;
 }
 

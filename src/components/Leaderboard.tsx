@@ -74,7 +74,7 @@ export function Leaderboard({ leaderboard, isLoading, error, selectedIndex, tour
         <Box>
           <Text dimColor>{formatDateRange(tournament.date, tournament.endDate)}</Text>
           {tournament.purse && <Text dimColor> | {tournament.purse}</Text>}
-          <Text dimColor> | Round {round}</Text>
+          <Text dimColor> | {leaderboard.isPlayoff ? 'Playoff' : `Round ${round}`}</Text>
           {tournament.status === 'in' && <Text color="green"> LIVE</Text>}
           {tournament.status === 'post' && <Text color="yellow"> FINAL</Text>}
         </Box>
